@@ -7,4 +7,4 @@
 (*) These codes were originally developed for an experiment regarding a muon detector, built during an hackathon by three physics students.
 
 ---
-Note: probably, this project will be updated.
+Note: probably, this project will not be updated.

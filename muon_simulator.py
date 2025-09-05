@@ -2,6 +2,7 @@ import pygame
 import random
 import numpy as np
 import sys
+import time
 
 WIDTH,HEIGHT=800,600                                           
 screen=pygame.display.set_mode((WIDTH,HEIGHT))                 
@@ -23,6 +24,9 @@ def TAC(f,x_1,x_2,y_1,y_2):
 def cos2(x):
     return (np.cos(x))**2
 
+def expo(x):
+    return np.exp(-x/100)
+
 class Muon(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
@@ -30,7 +34,7 @@ class Muon(pygame.sprite.Sprite):
         self.image.set_colorkey((255,255,255))
         self.rect=self.image.get_rect()        
         theta=TAC(cos2,np.pi/2,-np.pi/2,0,1)
-        self.rect.center=(random.random()*WIDTH,0)
+        self.rect.center=(random.uniform(40,760),0)
         self.speed=(10*np.sin(theta),10*np.cos(theta))
     def update(self,muons):
         self.rect.x+=self.speed[0]
@@ -86,20 +90,26 @@ def ordered(all_sprites):
                 all_sprites.add(Cell(size_cell[0]/2+i*size_cell[0],size_cell[1]+j*size_cell[1]))
     
 
-#staggered(all_sprites)
-ordered(all_sprites)
+staggered(all_sprites)
+#ordered(all_sprites)
 muons=[]        
 frame_count=0
+new_frame_count=0
+muon_count=0
+start_time=time.time()
 while True:
     for event in pygame.event.get():
             if event.type==pygame.QUIT:
                 pygame.quit()
                 sys.exit()
                 
-    if frame_count%100==0:
+    if frame_count>=new_frame_count:
         muon=Muon()
         muons.append(muon)
         all_sprites.add(muon)
+        frame_count=0
+        new_frame_count=TAC(expo,0,200,0,1)
+        muon_count+=1
     frame_count+=1
     
     screen.fill((255,255,255))
@@ -113,6 +123,12 @@ while True:
             remaining_muons.append(muon)
             
     muons=remaining_muons
+    
+    font=pygame.font.SysFont(None,30)
+    text=font.render(f"MUONS: {muon_count} - TIME: {round((time.time()-start_time),2)} s",True,(0,0,0))
+    
+    
+    screen.blit(text,(10,10))            
     
     pygame.display.flip()
     clock.tick(60)
